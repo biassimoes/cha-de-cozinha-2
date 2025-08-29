@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Chá de Cozinha</title>
+  <style>
+<style>
+  body {
+    background-color: #ced2d4;
+    color: #1e85b9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    font-size: 30px; /* Aumenta o tamanho da fonte geral */
+  }
+
+  h1 {
+    font-size: 45px; /* Título principal maior */
+    color: #1e85b9;
+  }
+
+    h2 {
+    font-size: 40px; /* Título principal maior */
+    color: #1e85b9;
+  }
+
+  p {
+    font-size: 35px; /* Subtítulo maior */
+    color: #1e85b9;
+  }
+
+  .categoria {
+    margin-bottom: 40px;
+  }
+
+  button {
+    background-color: #1e85b9;
+    color: #000;
+    border: none;
+    padding: 25px 20px; /* Botões mais largos e altos */
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 15px;
+    font-size: 22px; /* Texto do botão maior */
+    font-weight: bold;
+  }
+
+  button:disabled {
+    background-color: #444;
+    color: #888;
+    cursor: not-allowed;
+  }
+</style>
+
+  <!-- ✅ Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD1fn_kDEozwbys7crMmQtoUwgSYQuIE3A",
+    authDomain: "cha-de-cozinha-ed164.firebaseapp.com",
+    databaseURL: "https://cha-de-cozinha-ed164-default-rtdb.firebaseio.com",
+    projectId: "cha-de-cozinha-ed164",
+    storageBucket: "cha-de-cozinha-ed164.appspot.com",
+    messagingSenderId: "539801316247",
+    appId: "1:539801316247:web:5cb50bf3dc1a949a9032d2"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Função para reservar presente
+  window.desativar = function (botao) {
+    const link = botao.getAttribute("data-link");
+    const id = btoa(link);
+    const nomeItem = botao.innerText;
+
+    if (link) {
+      window.open(link, "_blank");
+    }
+
+    const presenteRef = ref(db, "presentes/" + id);
+    set(presenteRef, { reservado: true })
+      .then(() => {
+        botao.disabled = true;
+        if (!botao.innerText.includes("✅")) {
+          botao.innerText += " ✅";
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao salvar no Firebase:", error);
+        alert("Erro ao reservar o presente. Verifique sua conexão ou permissões.");
+      });
+  };
+
+  // Atualiza os botões em tempo real
+  const presentesRef = ref(db, "presentes");
+  onValue(presentesRef, snapshot => {
+    const dados = snapshot.val() || {};
+    const botoes = document.querySelectorAll("button[data-link]");
+
+    botoes.forEach(botao => {
+      const link = botao.getAttribute("data-link");
+      const id = btoa(link);
+
+      if (dados[id] && dados[id].reservado) {
+        botao.disabled = true;
+        if (!botao.innerText.includes("✅")) {
+          botao.innerText += " ✅";
+        }
+      }
+    });
+  });
+</script>
+</head>
+<body>
+  <h1>Chá de Cozinha</h1>
+  <p>Escolha um item para presentear!</p>
+
+  <!-- Categorias e botões -->
+  <div class="categoria">
+    <h2>Eletrodomésticos</h2>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/sanduicheira-amvox-ams-370-preta-750w-antiaderente/p/235233800/ep/gset/" aria-label="Presentear com Sanduicheira">Sanduicheira</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/chaleira-eletrica-mondial-pratic-hot-ce-07-preta-1l/p/236674800/ud/chcl/" aria-label="Presentear com Chaleira elétrica">Chaleira elétrica</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/air-fryer-mondial-afn-40-bf-preta-com-timer/p/236409700/ep/efso/" aria-label="Presentear com Air fryer">Air fryer</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/batedeira-mondial-preta-500w-premium-due-cake-inox-b-50-b-4-velocidades/p/021271000/ep/btdc/" aria-label="Presentear com Batedeira">Batedeira</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/ferro-de-passar-roupa-a-seco-mondial-fsn-55-b-preto/p/227604000/ep/elfs/" aria-label="Presentear com Ferro de Passar">Ferro de Passar</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/forno-eletrico-de-bancada-mondial-multifuncional-42l-preto-e-prata-grand-family-ii-frn-42-b/p/240012700/ed/forn/" aria-label="Presentear com Forno elétrico">Forno elétrico</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/micro-ondas-midea-20l-branco-e-preto-mras22/p/231232700/ed/mond/" aria-label="Presentear com Microondas">Microondas</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/mixer-2-em-1-mondial-500w-preto-e-prata-power-mixer-premium-m-07-2-velocidades/p/236677700/ep/mixr/" aria-label="Presentear com Mixer">Mixer</button>
+    <button onclick="desativar(this)" data-link="https://www.magazinevoce.com.br/magazineofertadaluiza/ventilador-de-mesa-e-parede-wap-flow-turbo-180w-8-pas-50cm-110v/p/dbd5110ak1/ar/arvl/" aria-label="Presentear com Ventilador">Ventilador</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/q4VAGn6 " aria-label="Presentear com Aspirador Vertical">Aspirador Vertical</button>
+  </div>
+
+  <div class="categoria">
+    <h2>Cozinha</h2>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/X63LWmv" aria-label="Presentear com Potes herméticos">Potes herméticos</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/bwJnCM9" aria-label="Presentear com Saleiro">Saleiro</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/yakJdkK" aria-label="Presentear com Escorredor de louças">Escorredor de louças</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/DFTNdSu" aria-label="Presentear com Conjunto Marinex">Conjunto Marinex</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/b5TSjFs" aria-label="Presentear com Kit talher">Kit talher</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/2dqyCfm" aria-label="Presentear com Conjunto de canecas">Conjunto de canecas</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/FJSbtfh" aria-label="Presentear com Jogo de taças">Jogo de taças</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/9yc72oE" aria-label="Presentear com Kit tábua de madeira">Kit tábua de madeira</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/gGoX1z3" aria-label="Presentear com Taça de sobremesa">Taça de sobremesa</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/QZJcVTj" aria-label="Presentear com Kit de jantar">Kit de jantar</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/EJDYL4N" aria-label="Presentear com Pratos de sobremesa">Pratos de sobremesa</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/yXdLN1Q" aria-label="Presentear com Kit potes">Kit potes</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/ytssD7K" aria-label="Presentear com Porta temperos">Porta temperos</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/kKnBwKV" aria-label="Presentear com Panela de pressão">Panela de pressão</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/nVGyvhD" aria-label="Presentear com Jogo de panelas">Jogo de panelas</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/gKuhxXu" aria-label="Presentear com Kit churrasco">Kit churrasco</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/dM43UfD" aria-label="Presentear com Jogo de copo">Jogo de copo</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/QdvwB53" aria-label="Presentear com Jogo americano">Jogo americano</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/LUCNs57" aria-label="Presentear com Jarra de vidro">Jarra de vidro</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/x4uaoCv" aria-label="Presentear com Garrafa de café">Garrafa de café</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/9Y6h9DT" aria-label="Presentear com Fruteira">Fruteira</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/7cDBvDt" aria-label="Presentear com Kit utensílios de cozinha">Kit utensílios de cozinha</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/vti7LSm" aria-label="Presentear com Boleira">Boleira</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/Ds5JjZ4" aria-label="Presentear com Kit forma">Kit forma</button>
+  </div>
+
+  <div class="categoria">
+    <h2>Quarto (Cama Queen)</h2>
+    <button onclick="desativar(this)" data-link="https://shopee.com.br/product/300779622/22896783747?d_id=4040e" aria-label="Presentear com Jogo de lençol">Jogo de lençol</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/GvyBCgt" aria-label="Presentear com Cobertor pesado">Cobertor pesado</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/1FH5Wo7" aria-label="Presentear com Coberta manta">Coberta manta</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/J9JLcEt" aria-label="Presentear com Cesto de roupa">Cesto de roupa</button>
+  </div>
+
+  <div class="categoria">
+    <h2>Sala</h2>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/Ls26CuY" aria-label="Presentear com Tapete felpudo">Tapete felpudo</button>
+  </div>
+
+  <div class="categoria">
+    <h2>Lavanderia</h2>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/3KbXwZu" aria-label="Presentear com Varal de chão">Varal de chão</button>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/rdXiJK2" aria-label="Presentear com Kit de ferramentas">Kit de ferramentas</button>
+  </div>
+
+  <div class="categoria">
+    <h2>Banheiro</h2>
+    <button onclick="desativar(this)" data-link="https://br.shp.ee/rXtn8UV" aria-label="Presentear com Kit acessórios banheiro">Kit acessórios banheiro</button>
+  </div>
+</body>
+</html>
