@@ -107,6 +107,46 @@
       if (dados[id] && dados[id].reservado) {
         botao.disabled = true;
         botao.innerText = "Presente reservado ✅";
+    
+    
+        window.desativar = function (botao) {
+    const link = botao.getAttribute("data-link");
+    const id = btoa(link);
+    const nomeItem = botao.innerText;
+
+    if (link) {
+      window.open(link, "_blank");
+    }
+
+    const presenteRef = ref(db, "presentes/" + id);
+    set(presenteRef, { reservado: true })
+      .then(() => {
+        botao.disabled = true;
+        if (!botao.innerText.includes("✅")) {
+          botao.innerText += " ✅";
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao salvar no Firebase:", error);
+        alert("Erro ao reservar o presente. Verifique sua conexão ou permissões.");
+      });
+  };
+
+  // Atualiza os botões em tempo real
+  const presentesRef = ref(db, "presentes");
+  onValue(presentesRef, snapshot => {
+    const dados = snapshot.val() || {};
+    const botoes = document.querySelectorAll("button[data-link]");
+
+    botoes.forEach(botao => {
+      const link = botao.getAttribute("data-link");
+      const id = btoa(link);
+
+      if (dados[id] && dados[id].reservado) {
+        botao.disabled = true;
+        if (!botao.innerText.includes("✅")) {
+          botao.innerText += " ✅";
+        }
       }
     });
   });
