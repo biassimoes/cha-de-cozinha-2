@@ -72,6 +72,45 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+    // Abrir produto e habilitar botão de confirmação
+  window.verProduto = function(botao) {
+    const link = botao.getAttribute("data-link");
+    if (link) window.open(link, "_blank");
+
+    const confirmarBtn = botao.parentElement.querySelector('button[onclick="confirmarPresente(this)"]');
+    if (confirmarBtn) confirmarBtn.disabled = false;
+  };
+
+  // Confirmar presente
+  window.confirmarPresente = function(botao) {
+    const link = botao.getAttribute("data-link");
+    const id = btoa(link);
+    const nomeItem = botao.parentElement.querySelector("p").innerText;
+
+    const presenteRef = ref(db, "presentes/" + id);
+    set(presenteRef, { reservado: true }).then(() => {
+      botao.disabled = true;
+      botao.innerText = "Presente reservado ✅";
+    }).catch(error => {
+      console.error("Erro ao salvar no Firebase:", error);
+      alert("Erro ao reservar o presente. Verifique sua conexão ou permissões.");
+    });
+  };
+
+  // Atualizar status dos presentes
+  const presentesRef = ref(db, "presentes");
+  onValue(presentesRef, snapshot => {
+    const dados = snapshot.val() || {};
+    document.querySelectorAll('button[onclick="confirmarPresente(this)"]').forEach(botao => {
+      const link = botao.getAttribute("data-link");
+      const id = btoa(link);
+      if (dados[id] && dados[id].reservado) {
+        botao.disabled = true;
+        botao.innerText = "Presente reservado ✅";
+      }
+    });
+  });
+
   // Função para reservar presente
   window.desativar = function (botao) {
     const link = botao.getAttribute("data-link");
